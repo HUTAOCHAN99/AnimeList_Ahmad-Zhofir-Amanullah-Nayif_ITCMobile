@@ -9,7 +9,7 @@ class FavoritesPage extends StatelessWidget {
 
   Future<void> _logout(BuildContext context) async {
     var box = Hive.box('userBox');
-    await box.delete('loggedInUser'); // Hanya menghapus data login
+    await box.delete('loggedInUser');
 
     if (!context.mounted) return;
 
@@ -55,7 +55,6 @@ class FavoritesPage extends StatelessWidget {
             subtitle: Text('Rating: ${item['rating']}'),
             onTap: () {
               Navigator.pop(context);
-              // Implementasikan logika untuk menampilkan detail anime jika diperlukan
             },
           );
         },
