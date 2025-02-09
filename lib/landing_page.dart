@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'main.dart';
+import 'favorites_page.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({Key? key}) : super(key: key);
@@ -268,17 +269,33 @@ As if the crisis in Kivotos was not enough, the GSC president is nowhere to be f
     return Scaffold(
       appBar: AppBar(
         title: const Text('Landing Page'),
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FavoritesPage(
+                  favoriteItems: items.where((item) => item['isFavorite']).toList(),
+                ),
+              ),
             );
           },
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FavoritesPage(
+                    favoriteItems: items.where((item) => item['isFavorite']).toList(),
+                  ),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: showAddAnimeForm,
@@ -288,48 +305,6 @@ As if the crisis in Kivotos was not enough, the GSC president is nowhere to be f
             onPressed: _logout,
           ),
         ],
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text(
-                'Favorit',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ...items.where((item) => item['isFavorite']).map((item) {
-              return ListTile(
-                leading: Image.network(
-                  item['image'],
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(
-                      Icons.broken_image,
-                      size: 50,
-                      color: Colors.grey,
-                    );
-                  },
-                ),
-                title: Text(item['name']),
-                subtitle: Text('Rating: ${item['rating']}'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _showAnimeDetails(item['id']);
-                },
-              );
-            }).toList(),
-          ],
-        ),
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(8),
@@ -380,29 +355,34 @@ As if the crisis in Kivotos was not enough, the GSC president is nowhere to be f
                       ),
                     ],
                   ),
-                  trailing: IconButton(
-                    icon: Icon(
-                      items[index]['isFavorite']
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      color: Colors.red,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        items[index]['isFavorite'] =
-                            !items[index]['isFavorite'];
-                      });
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            items[index]['isFavorite']
-                                ? '${items[index]['name']} ditambahkan ke favorit'
-                                : '${items[index]['name']} dihapus dari favorit',
-                          ),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          items[index]['isFavorite']
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: Colors.red,
                         ),
-                      );
-                    },
+                        onPressed: () {
+                          setState(() {
+                            items[index]['isFavorite'] =
+                                !items[index]['isFavorite'];
+                          });
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                items[index]['isFavorite']
+                                    ? '${items[index]['name']} ditambahkan ke favorit'
+                                    : '${items[index]['name']} dihapus dari favorit',
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),
